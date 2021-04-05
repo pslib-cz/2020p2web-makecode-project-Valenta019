@@ -1,0 +1,17 @@
+{
+    "image1": {
+        "data": "hwQUAA8AAAD/////////D/////////8P/////////w//////////D/////////8P/////////w//////////D/////////8P/////////w//////////D/////////8P/////////w//////////D/////////8P/////////w//////////D/////////8P/////////w//////////D/////////8P",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "Black_tile"
+    },
+    "image2": {
+        "data": "hwQUAA8AAAARERERERERAREREREREREBEREREREREQERERERERERAREREREREREBEREREREREQERERERERERAREREREREREBEREREREREQERERERERERAREREREREREBEREREREREQERERERERERAREREREREREBEREREREREQERERERERERAREREREREREBEREREREREQERERERERERAREREREREREB",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "White_tile"
+    },
+    "*": {
+        "mimeType": "image/x-mkcd-f4",
+        "dataEncoding": "base64",
+        "namespace": "myImages"
+    }
+}
