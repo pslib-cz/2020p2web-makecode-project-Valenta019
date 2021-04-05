@@ -1,5 +1,5 @@
 {
-    "name": "template arcade project-name",
+    "name": "Checkers",
     "description": "",
     "dependencies": {
         "device": "*"
@@ -13,7 +13,7 @@
         "test.ts"
     ],
     "targetVersions": {
-        "target": "1.4.28",
+        "target": "1.4.30",
         "targetId": "arcade"
     },
     "supportedTargets": [
