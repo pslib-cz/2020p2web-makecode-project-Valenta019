@@ -154,19 +154,23 @@ UpdateSelectorPos()
 //Checker selecting
 sprites.onOverlap(SpriteKind.Selector, SpriteKind.BlackChecker, function(sprite: Sprite, otherSprite: Sprite) {
     if (ply == "black"){
-        if (controller.A.isPressed()) {                    
+        if (controller.A.isPressed()) { 
+            if (otherSprite != selected){             
             Deselect()
             selected = otherSprite
             DetermineMoves(selected)
+            }
         }
     }
 })
 sprites.onOverlap(SpriteKind.Selector, SpriteKind.WhiteChecker, function(sprite: Sprite, otherSprite: Sprite) {
     if (ply == "white"){
         if (controller.A.isPressed()) {
+            if (otherSprite != selected){
             Deselect()
             selected = otherSprite           
             DetermineMoves(selected)
+            }
         }
     }
 })
@@ -230,7 +234,7 @@ const wayX = [way, -way, way, -way]
                 loops = 2
             }
             else {
-                wayY = [way-300, way-300]
+                wayY = [way-650, way-650]
                 loops = 2
             }
             for (let i = 0; i < loops; i++){
@@ -259,25 +263,25 @@ const wayX = [way, -way, way, -way]
         }
     }
 
- // Ignore the tile you are on, ladies have infinite range
+ // Ignore the tile you are on, ladies have infinite range (WIP)
     sprites.onOverlap(SpriteKind.Projectile, SpriteKind.BlackTile, function(sprite: Sprite, otherSprite: Sprite) {
 
-        if (!otherSprite.overlapsWith(selector) && otherSprite.z != -2){
-            if (!otherSprite.image.equals(assets.image`Green_tile`) && sprite.z <= 10){
+        if (!otherSprite.overlapsWith(selector) && otherSprite.z != -2){ // Have to figure out how to count greend tiles and passed checkers
+            if (!otherSprite.image.equals(assets.image`Green_tile`)){
             otherSprite.setImage(assets.image`Green_tile`)
-            sprite.z += 10
-            console.log(sprite.z)}
-            if (!otherSprite.image.equals(assets.image`Green_tile`) && sprite.z > 10){
-                otherSprite.setImage(assets.image`Green_tile`)
-                sprite.destroy()
+            sprite.z == -10
             }
-            if (!selected.image.equals(assets.image`White_lady`) || !selected.image.equals(assets.image`Black_lady`)|| sprite.z > 20){
-                console.log(sprite.z)
-                sprite.destroy()
-            }
-            
-        }
-        
+            if (!otherSprite.image.equals(assets.image`Green_tile`) && sprite.z == -10)
+            otherSprite.setImage(assets.image`Green_tile`)
+            sprite.destroy()
+            if (!selected.image.equals(assets.image`White_lady`) || !selected.image.equals(assets.image`Black_lady`)){
+                if (sprite.z < -1){
+                    sprite.destroy()
+                }                
+            }    
+      
+        }  
+        console.log(sprite.z)    
     })
 
 
