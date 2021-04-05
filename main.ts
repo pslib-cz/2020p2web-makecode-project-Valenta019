@@ -75,7 +75,15 @@ for (let i = 0; i < checkertiles.length; i++) {
                 black.checkers[black.checkers.length-1].setPosition(x,y)
 
             }
-            else{
+            else if(y < verticalTileSpace*3){
+                white.checkers.push(sprites.create(assets.image`White_checker`,SpriteKind.WhiteChecker))
+                white.checkers[white.checkers.length-1].setPosition(x,y)
+            }
+            if (black.startSide == 1 && y < verticalTileSpace*5){
+                black.checkers.push(sprites.create(assets.image`Black_checker`,SpriteKind.BlackChecker))
+                black.checkers[black.checkers.length-1].setPosition(x,y)
+            }
+            else if(y > verticalTileSpace*5){
                 white.checkers.push(sprites.create(assets.image`White_checker`,SpriteKind.WhiteChecker))
                 white.checkers[white.checkers.length-1].setPosition(x,y)
             }
