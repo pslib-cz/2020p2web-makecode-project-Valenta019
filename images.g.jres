@@ -9,6 +9,36 @@
         "mimeType": "image/x-mkcd-f4",
         "displayName": "White_tile"
     },
+    "image3": {
+        "data": "hwQUAA8AAAAAAP///w8AAADw3d3d/QAAAN/9///dDwDw3f///9/9AN/9/////90P3///////3w/f///////fD9///////98P3///////3w/f///////fD9///////98P3///////3w/f///////fD9///////98P3///////3w/f/f/////dD/Dd////3/0AAN/9///dDwAA8N3d3f0AAAAA////DwAA",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "Black_checker"
+    },
+    "image7": {
+        "data": "hwQUAA8AAAAAABEREQEAAAAQu7u7GwAAALEbERG7AQAQuxEREbEbALEbEREREbsBsRERERERsQGxERERERGxAbEREREREbEBsRERERERsQGxERERERGxAbEREREREbEBsRERERERsQGxERERERGxAbEREREREbEBsRERERERsQGxGxERERG7ARC7ERERsRsAALEbERG7AQAAELu7uxsAAAAAERERAQAA",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "White_checker"
+    },
+    "image8": {
+        "data": "hwQUAA8AAAAAAP///w8AAADw3d3d/QAAAN/9///dDwDw3f///9/9AN/9/////90P3/9VVVX13w/f/1VVVfXfD9///19V9d8P3////1X13w/f/1VVVfXfD9//VVVV9d8P3////1X13w/f//9fVfXfD9//VVVV9d8P3/9VVVX13w/f/f/////dD/Dd////3/0AAN/9///dDwAA8N3d3f0AAAAA////DwAA",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "Black_lady"
+    },
+    "image9": {
+        "data": "hwQUAA8AAAAAABEREQEAAAAQu7u7GwAAALEbERG7AQAQuxEREbEbALEbEREREbsBsRFVVVUVsQGxEVVVVRWxAbEREVFVFbEBsREREVUVsQGxEVVVVRWxAbERVVVVFbEBsREREVUVsQGxERFRVRWxAbERVVVVFbEBsRFVVVUVsQGxGxERERG7ARC7ERERsRsAALEbERG7AQAAELu7uxsAAAAAERERAQAA",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "White_lady"
+    },
+    "image4": {
+        "data": "hwQUAA8AAAB3dwcAAHd3BwcAAAAAAAAHBwAAAAAAAAcHAAAAAAAABwcAAAAAAAAHBwAAAAAAAAcAAAAAAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABwAAAAAAAAcHAAAAAAAABwcAAAAAAAAHBwAAAAAAAAcHAAAAAAAAB3d3BwAAd3cH",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "Selector_grn"
+    },
+    "image5": {
+        "data": "hwQUAA8AAAAiIgIAACIiAgIAAAAAAAACAgAAAAAAAAICAAAAAAAAAgIAAAAAAAACAgAAAAAAAAIAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAICAAAAAAAAAgIAAAAAAAACAgAAAAAAAAICAAAAAAAAAiIiAgAAIiIC",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "Selector_red"
+    },
     "*": {
         "mimeType": "image/x-mkcd-f4",
         "dataEncoding": "base64",
