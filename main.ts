@@ -113,29 +113,31 @@ let tileWidth = checkertiles[0][0].width
 let tileHeight = checkertiles[0][0].height
 function UpdateSelectorPos(){
     selector.setPosition(selectorPos["x"], selectorPos["y"])
-    //selector.z = 10
 
 }
 
-
+// Left
 controller.left.onEvent(ControllerButtonEvent.Pressed, function() {
     if (selectorPos["x"] - tileWidth >= 0){
         selectorPos["x"] -= tileWidth
         UpdateSelectorPos()
     }
 })
+// Right
 controller.right.onEvent(ControllerButtonEvent.Pressed, function() {
     if (selectorPos["x"] + tileWidth <= 160){
         selectorPos["x"] += tileWidth
         UpdateSelectorPos()
     }
 })
+// Up
 controller.up.onEvent(ControllerButtonEvent.Pressed, function() {
     if (selectorPos["y"] - tileHeight >= 0){
         selectorPos["y"] -= tileHeight
         UpdateSelectorPos()
     }
 })
+// Down
 controller.down.onEvent(ControllerButtonEvent.Pressed, function() {
     if (selectorPos["y"] + tileHeight <= 120){
         selectorPos["y"] += tileHeight
@@ -152,7 +154,7 @@ UpdateSelectorPos()
 //Checker selecting
 sprites.onOverlap(SpriteKind.Selector, SpriteKind.BlackChecker, function(sprite: Sprite, otherSprite: Sprite) {
     if (ply == "black"){
-        if (controller.A.isPressed()) {
+        if (controller.A.isPressed()) {                    
             Deselect()
             selected = otherSprite
             DetermineMoves(selected)
@@ -193,7 +195,7 @@ sprites.onOverlap(SpriteKind.Selector, SpriteKind.BlackTile, function(sprite: Sp
         selector.setImage(assets.image`Selector_grn`)
     })
 
-
+// Deselecting
  function Deselect(){
     selected = null 
     for (let i = 0; i < checkertiles.length; i++) {
@@ -210,14 +212,28 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function(){
 }
 
 {// ### Moves determination
+let determined = false
 let lastTouchedBlack:Sprite = null
 const way = 1000
 const wayX = [way, -way, way, -way]
-const wayY = [way-100, way-100, -way+100, -way+100]
+
 
     function DetermineMoves(forwhat:Sprite) {
+        let wayY = [-way+300, -way+300, way-300, way-300]
+        let loops = 2
         if (forwhat != null){
-            for (let i=0;i<4;i++){
+            if(selected.image.equals(assets.image`Black_lady`) || selected.image.equals(assets.image`White_lady`)){
+                loops = 4
+            }
+            else if (ply == "white" && white.startSide == 1 || ply == "black" && black.startSide == 1){
+                wayY = [-way+650, -way+650]
+                loops = 2
+            }
+            else {
+                wayY = [way-300, way-300]
+                loops = 2
+            }
+            for (let i = 0; i < loops; i++){
                 let projectile = sprites.createProjectileFromSprite(img`
                 . . . . . . . . . . . . . . . .
                 . . . . . . . . . . . . . . . .
@@ -236,39 +252,63 @@ const wayY = [way-100, way-100, -way+100, -way+100]
                 . . . . . . . . . . . . . . . .
                 . . . . . . . . . . . . . . . .
                 `, selected, wayX[i], wayY[i])
+                projectile.z = 1
                 //projectile.setFlag(SpriteFlag.Invisible, true)
             }
+            
         }
     }
-    // Selected tile ghosting
-    /*sprites.onOverlap(SpriteKind.Selector, SpriteKind.BlackTile, function(sprite: Sprite, otherSprite: Sprite) {
-        lastTouchedBlack = otherSprite
-        lastTouchedBlack.setFlag(SpriteFlag.Ghost, true)
-    })
-        sprites.onOverlap(SpriteKind.Selector, SpriteKind.WhiteTile, function(sprite: Sprite, otherSprite: Sprite) {
-        lastTouchedBlack.setFlag(SpriteFlag.Ghost, false)
-    })*/
 
  // Ignore the tile you are on, ladies have infinite range
     sprites.onOverlap(SpriteKind.Projectile, SpriteKind.BlackTile, function(sprite: Sprite, otherSprite: Sprite) {
-        if (!otherSprite.overlapsWith(selector)){
+
+        if (!otherSprite.overlapsWith(selector) && otherSprite.z != -2){
+            if (!otherSprite.image.equals(assets.image`Green_tile`) && sprite.z <= 10){
             otherSprite.setImage(assets.image`Green_tile`)
-            if (!selected.image.equals(assets.image`White_lady`) || !selected.image.equals(assets.image`Black_lady`)){
+            sprite.z += 10
+            console.log(sprite.z)}
+            if (!otherSprite.image.equals(assets.image`Green_tile`) && sprite.z > 10){
+                otherSprite.setImage(assets.image`Green_tile`)
                 sprite.destroy()
             }
+            if (!selected.image.equals(assets.image`White_lady`) || !selected.image.equals(assets.image`Black_lady`)|| sprite.z > 20){
+                console.log(sprite.z)
+                sprite.destroy()
+            }
+            
         }
         
     })
 
+
  // Occupied tiles can't be green
     sprites.onOverlap(SpriteKind.BlackChecker, SpriteKind.BlackTile, function(sprite: Sprite, otherSprite: Sprite) {
-        otherSprite.setImage(assets.image`Black_tile`)
+        otherSprite.z = -2
+        //otherSprite.setImage(assets.image`Black_tile`)
     })
     sprites.onOverlap(SpriteKind.WhiteChecker, SpriteKind.BlackTile, function(sprite: Sprite, otherSprite: Sprite) {
-        otherSprite.setImage(assets.image`Black_tile`)
+        otherSprite.z = -2
+        //otherSprite.setImage(assets.image`Black_tile`)
     })
-}
 
-game.onUpdate(function() {
-    
+
+game.onUpdateInterval(500, function() {
+    let blacktiles = sprites.allOfKind(SpriteKind.BlackTile)
+    for(let i = 0; i < blacktiles.length; i++){
+        blacktiles[i].z = -1
+    }
+
 })
+// No TKing
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.BlackChecker, function(sprite: Sprite, otherSprite: Sprite) {
+    if(ply == "black" && otherSprite != selected){
+        sprite.destroy()
+    }
+}) 
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.WhiteChecker, function(sprite: Sprite, otherSprite: Sprite) {
+    if(ply == "white" && otherSprite != selected){
+        sprite.destroy()
+    }
+}) 
+
+}
