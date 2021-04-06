@@ -1,6 +1,6 @@
 {
     "name": "HalfCheckers",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Checkers for 2 players on 1 device (They take turns). You can't take 2 checkers at once and ladies aren't so powerful",
     "dependencies": {
         "device": "*"
