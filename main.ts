@@ -466,7 +466,7 @@ sprites.onDestroyed(SpriteKind.WhiteChecker, function(sprite: Sprite) {
 
 }
 
-console.log(white.checkers.length)
+
 
 // ###=### Game end determination
 game.onUpdateInterval(2000, function() {
