@@ -26,7 +26,7 @@ let ply = "white"
 info.player1.setScore(0)
 info.player2.setScore(0)
 
-// ##### CHESSBOARD
+// ########## CHESSBOARD
 
 {// ### Creating tiles
 let colourCounter = 0
@@ -56,16 +56,14 @@ for (let i = 0; i < checkertiles.length; i++) {
     let x = 10
     for (let j = 0; j < checkertiles[i].length; j++){
         checkertiles[i][j].setPosition(x, y)
-        //console.log("tile positioned "+x)
         x += horizontalTileSpace  
     }
-    //console.log("row positioned "+y)
     y += verticalTileSpace
 }
 }
-// ##### CHECKERS
+// ########## CHECKERS
 
-//Checker creation
+// ### Checker creation
 {
 
 let horizontalTileSpace = 20
@@ -106,7 +104,7 @@ for (let i = 0; i < checkertiles.length; i++) {
 }
 }
 
-// ##### SELECTOR
+// ########## SELECTOR
 
 let selectorPos = {x:checkertiles[0][0].x, y:checkertiles[0][0].y} //Position of the selector (set to a position of the first tile)
 
@@ -150,7 +148,7 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function() {
 UpdateSelectorPos()
 }
 
-
+// ######### MOVEMENT
 
 {// ### Moves determination
 let determined = false
@@ -159,6 +157,7 @@ const width = selector.width
 const height = selector.height
 const wayx = [1,0,1,0]
 let wayy = [1,1,0,0]
+
     function determineMoves(forwhat:Sprite) {
 
         const wayX = [forwhat.x + width, forwhat.x - width, forwhat.x + width, forwhat.x - width]
@@ -204,6 +203,7 @@ let wayy = [1,1,0,0]
             }       
         }
     }
+
     function determineMovesExtended(forwhat:Sprite,x:number,y:number) {
         const wayX = [forwhat.x - width*2, forwhat.x + width*2]
         const wayY = [forwhat.y - height*2, forwhat.y + height*2]
@@ -246,7 +246,7 @@ let wayy = [1,1,0,0]
                 
         }
     }
-
+// Checker takeable?
     sprites.onOverlap(SpriteKind.Projectile, SpriteKind.BlackTile, function(sprite: Sprite, otherSprite: Sprite) {
         
         if (otherSprite.z != -2 && otherSprite.z != -3){
@@ -273,18 +273,27 @@ let wayy = [1,1,0,0]
     })
 
 
- // Occupied tiles can't be green
+ // z -2 = occupied black tile; z -3 = occupied white tile
     sprites.onOverlap(SpriteKind.BlackChecker, SpriteKind.BlackTile, function(sprite: Sprite, otherSprite: Sprite) {
         otherSprite.z = -2
+        for (let item of checkertiles[checkertiles.length-1]){
+            if(item == otherSprite){
+                sprite.setImage(assets.image`Black_lady`)
+            }
+        }
         //otherSprite.setImage(assets.image`Black_tile`)
     })
     sprites.onOverlap(SpriteKind.WhiteChecker, SpriteKind.BlackTile, function(sprite: Sprite, otherSprite: Sprite) {
         otherSprite.z = -3
-
+        for (let item of checkertiles[0]){
+            if(item == otherSprite){
+                sprite.setImage(assets.image`White_lady`)
+            }
+        }
         //otherSprite.setImage(assets.image`Black_tile`)
     })
 
-
+ // unoccupy tiles
 game.onUpdateInterval(500, function() {
     let blacktiles = sprites.allOfKind(SpriteKind.BlackTile)
     for(let i = 0; i < blacktiles.length; i++){
@@ -306,9 +315,37 @@ sprites.onOverlap(SpriteKind.Projectile, SpriteKind.WhiteChecker, function(sprit
 
 }
 
-{// ### Selector selecting
+{// ########## Selector selecting (targets)
 
-//Checker selecting
+function EndTurn() {
+    if (ply == "white"){
+        selector.setImage(assets.image`Selector_red`)
+        ply = "black"
+    }
+    else {
+        selector.setImage(assets.image`Selector_blu`)
+        ply = "white"   
+    }
+}
+
+// Deselecting
+ function Deselect(){
+    selected = null
+    for (let i = 0; i < checkertiles.length; i++) {
+        for ( let j = 0; j < checkertiles[i].length; j++)
+        if (checkertiles[i][j].image.equals(assets.image`Green_tile`)){
+            checkertiles[i][j].setImage(assets.image`Black_tile`)
+        }
+    }
+    lastTarget = null
+ 
+}
+// B = deselect
+controller.B.onEvent(ControllerButtonEvent.Pressed, function(){
+    Deselect()
+})
+
+// ### Checker selecting
 sprites.onOverlap(SpriteKind.Selector, SpriteKind.BlackChecker, function(sprite: Sprite, otherSprite: Sprite) {
     if (ply == "black"){
         if (controller.A.isPressed()) { 
@@ -332,26 +369,15 @@ sprites.onOverlap(SpriteKind.Selector, SpriteKind.WhiteChecker, function(sprite:
     }
 })
 
-function EndTurn() {
-    if (ply == "white"){
-        selector.setImage(assets.image`Selector_red`)
-        ply = "black"
-    }
-    else {
-        selector.setImage(assets.image`Selector_blu`)
-        ply = "white"   
-    }
-}
+// Delete immobile takers
 game.onUpdate(function() {
     for (let item of sprites.allOfKind(SpriteKind.Taker)){
         if (item.vx == 0 && item.vy == 0){
-            item.destroy()
-            
-            
+            item.destroy()        
         }
     }
 })
-
+// end round on taker destruction
 sprites.onDestroyed(SpriteKind.Taker, function(sprite: Sprite) {
     Deselect()
     EndTurn()
@@ -363,44 +389,28 @@ sprites.onOverlap(SpriteKind.Selector, SpriteKind.BlackTile, function(sprite: Sp
     if(otherSprite.image.equals(assets.image`Green_tile`)){
          //selector.setImage(assets.image`Selector_red`) // Selector highlighting on green tiles, ditched
         if (controller.A.isPressed()) {
-            if (lastTarget != otherSprite){
+            if (lastTarget != otherSprite){ // to run only once
             lastTarget = otherSprite
-                let taker = sprites.createProjectileFromSprite(img`
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . 2 2 . . . . . . .
-                    . . . . . . . 2 2 . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                `, selected, 0 ,0)
+                let taker = sprites.createProjectileFromSprite(assets.image`projectile`, selected, 0 ,0)
                 taker.setKind(SpriteKind.Taker)
                 taker.setFlag(SpriteFlag.Invisible, true)
                 taker.follow(otherSprite)
 
             selected.setPosition(otherSprite.x, otherSprite.y)
                  
-            /*Deselect()
+            /*Deselect() //moved to onDestroyed(SpriteKind.Taker)
             EndTurn()*/
             }
         }
     }
-    /*else{ // Selector colour reverting
+    /*else{ // Selector colour reverting, ditched
     if (ply == "white"){
         selector.setImage(assets.image`Selector_blu`)
     }
     else selector.setImage(assets.image`Selector_red`)
     }*/
 })
+// Taker taking
 sprites.onOverlap(SpriteKind.Taker, SpriteKind.BlackChecker, function(sprite: Sprite, otherSprite: Sprite) {
 
     if (ply == "white"){
@@ -416,40 +426,29 @@ sprites.onOverlap(SpriteKind.Taker, SpriteKind.WhiteChecker, function(sprite: Sp
     sprite.destroy()
     }
 })
-sprites.onDestroyed(SpriteKind.BlackChecker, function(sprite: Sprite) {
+
+
+// Removes checkers from their list, if it's ever required
+/*sprites.onDestroyed(SpriteKind.BlackChecker, function(sprite: Sprite) {
     let i = 0
     let nullCount = 0
     for(let item of black.checkers){
         if (item == sprite){
             black.checkers.set(i,null)
         }
-        else if(item == null){
-            nullCount++
-        }
-        i++
     }
-    if (nullCount == black.checkers.length){
-        game.over()
-    }
-    
 })
 sprites.onDestroyed(SpriteKind.WhiteChecker, function(sprite: Sprite) {
     let i = 0
-    let nullCount = 0
+
     for(let item of white.checkers){
         if (item == sprite){
             white.checkers.set(i,null)
         }
-        else if(item == null){
-            nullCount++
+
         }
         i++
-    }
-    if (nullCount == white.checkers.length){
-        game.over()
-    }
-    
-})
+})*/
 // Selector colour reverting
 /*sprites.onOverlap(SpriteKind.Selector, SpriteKind.WhiteTile, function(sprite: Sprite, otherSprite: Sprite) {
     if (ply == "white"){
@@ -459,19 +458,14 @@ sprites.onDestroyed(SpriteKind.WhiteChecker, function(sprite: Sprite) {
     
 })*/
 
-// Deselecting
- function Deselect(){
-    selected = null
-    for (let i = 0; i < checkertiles.length; i++) {
-        for ( let j = 0; j < checkertiles[i].length; j++)
-        if (checkertiles[i][j].image.equals(assets.image`Green_tile`)){
-            checkertiles[i][j].setImage(assets.image`Black_tile`)
-        }
+
+}
+
+console.log(white.checkers.length)
+
+// ###=### Game end determination
+game.onUpdateInterval(2000, function() {
+    if (info.player1.score() == black.checkers.length || info.player2.score() == white.checkers.length){
+        game.over(true)
     }
-    lastTarget = null
- 
-}
-controller.B.onEvent(ControllerButtonEvent.Pressed, function(){
-    Deselect()
 })
-}
