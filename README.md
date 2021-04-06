@@ -9,5 +9,3 @@
 
 # Zde odkaz na Github pages
 https://pslib-cz.github.io/2020p2web-makecode-project-Valenta019/
-
-zkusil jsem to i s public repozitářem, ale stejně to pořád nějak nefunguje
