@@ -6,7 +6,8 @@
 * for PXT/arcade
 <script src="https://makecode.com/gh-pages-embed.js"></script><script>makeCodeRender("{{ site.makecode.home_url }}", "{{ site.github.owner_name }}/{{ site.github.repository_name }}");</script>
 
-Zde odkaz na Github pages
+
+# Zde odkaz na Github pages
 https://pslib-cz.github.io/2020p2web-makecode-project-Valenta019/
 
 zkusil jsem to i s public repozitářem, ale stejně to pořád nějak nefunguje
