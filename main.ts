@@ -4,6 +4,8 @@ namespace SpriteKind{
     export const Selector = SpriteKind.create()
     export const BlackChecker = SpriteKind.create()
     export const WhiteChecker = SpriteKind.create()
+    export const Marker = SpriteKind.create()
+    export const Taker = SpriteKind.create()
     //export const BlackLady = SpriteKind.create()
     //export const WhiteLady = SpriteKind.create()
 }
@@ -14,12 +16,11 @@ scene.setBackgroundColor(6)
 let checkertiles = [ [] as Sprite[]] //Chessboard
 let selector = sprites.create(assets.image`Selector_grn`,SpriteKind.Selector)
 selector.z = 10
-let black = {checkers: [] as Sprite[], startSide:0}
-let white = {checkers: [] as Sprite[], startSide:1}
+let black = {checkers: [] as Sprite[], startSide:0} //player1
+let white = {checkers: [] as Sprite[], startSide:1} //player2
 
 let selected:Sprite = null
 let ply = "white"
-
 
 
 // ##### CHESSBOARD
@@ -102,8 +103,6 @@ for (let i = 0; i < checkertiles.length; i++) {
 }
 }
 
-
-
 // ##### SELECTOR
 
 let selectorPos = {x:checkertiles[0][0].x, y:checkertiles[0][0].y} //Position of the selector (set to a position of the first tile)
@@ -149,139 +148,127 @@ UpdateSelectorPos()
 }
 
 
-{// ### Selector selecting
-
-//Checker selecting
-sprites.onOverlap(SpriteKind.Selector, SpriteKind.BlackChecker, function(sprite: Sprite, otherSprite: Sprite) {
-    if (ply == "black"){
-        if (controller.A.isPressed()) { 
-            if (otherSprite != selected){             
-            Deselect()
-            selected = otherSprite
-            DetermineMoves(selected)
-            }
-        }
-    }
-})
-sprites.onOverlap(SpriteKind.Selector, SpriteKind.WhiteChecker, function(sprite: Sprite, otherSprite: Sprite) {
-    if (ply == "white"){
-        if (controller.A.isPressed()) {
-            if (otherSprite != selected){
-            Deselect()
-            selected = otherSprite           
-            DetermineMoves(selected)
-            }
-        }
-    }
-})
-
-//Target selecting & movement
-sprites.onOverlap(SpriteKind.Selector, SpriteKind.BlackTile, function(sprite: Sprite, otherSprite: Sprite) {
-     if(otherSprite.image.equals(assets.image`Green_tile`)){
-         selector.setImage(assets.image`Selector_red`)
-        if (controller.A.isPressed()) {
-            selected.setPosition(otherSprite.x, otherSprite.y)
-            Deselect()
-            if (ply =="white"){
-                ply = "black"
-            }
-            else
-            {ply = "white"}
-
-        }
-    }
-    else{
-        selector.setImage(assets.image`Selector_grn`)
-    }
-})
-
-    sprites.onOverlap(SpriteKind.Selector, SpriteKind.WhiteTile, function(sprite: Sprite, otherSprite: Sprite) {
-        selector.setImage(assets.image`Selector_grn`)
-    })
-
-// Deselecting
- function Deselect(){
-    selected = null 
-    for (let i = 0; i < checkertiles.length; i++) {
-        for ( let j = 0; j < checkertiles[i].length; j++)
-        if (checkertiles[i][j].image.equals(assets.image`Green_tile`)){
-            checkertiles[i][j].setImage(assets.image`Black_tile`)
-        }
-    }
- 
-}
-controller.B.onEvent(ControllerButtonEvent.Pressed, function(){
-    Deselect()
-})
-}
 
 {// ### Moves determination
 let determined = false
 let lastTouchedBlack:Sprite = null
-const way = 1000
-const wayX = [way, -way, way, -way]
+const width = selector.width
+const height = selector.height
+const wayx = [1,0,1,0]
+let wayy = [1,1,0,0]
+    function determineMoves(forwhat:Sprite) {
 
-
-    function DetermineMoves(forwhat:Sprite) {
-        let wayY = [-way+300, -way+300, way-300, way-300]
+        const wayX = [forwhat.x + width, forwhat.x - width, forwhat.x + width, forwhat.x - width]
+        let wayY = [forwhat.y + height, forwhat.y + height, forwhat.y - height, forwhat.y - height]
         let loops = 2
+
         if (forwhat != null){
             if(selected.image.equals(assets.image`Black_lady`) || selected.image.equals(assets.image`White_lady`)){
                 loops = 4
             }
             else if (ply == "white" && white.startSide == 1 || ply == "black" && black.startSide == 1){
-                wayY = [-way+650, -way+650]
+                wayY = [forwhat.y-height, forwhat.y-height]
+                wayy = [0,0]
                 loops = 2
             }
             else {
-                wayY = [way-650, way-650]
+                wayY = [forwhat.y+height, forwhat.y+height]
+                wayy = [1,1]
                 loops = 2
             }
+
             for (let i = 0; i < loops; i++){
-                let projectile = sprites.createProjectileFromSprite(img`
-                . . . . . . . . . . . . . . . .
-                . . . . . . . . . . . . . . . .
-                . . . . . . . . . . . . . . . .
-                . . . . . . . . . . . . . . . .
-                . . . . . . . . . . . . . . . .
-                . . . . . . . . . . . . . . . .
-                . . . . . . . . . . . . . . . .
-                . . . . . . . f f . . . . . . .
-                . . . . . . . f f . . . . . . .
-                . . . . . . . . . . . . . . . .
-                . . . . . . . . . . . . . . . .
-                . . . . . . . . . . . . . . . .
-                . . . . . . . . . . . . . . . .
-                . . . . . . . . . . . . . . . .
-                . . . . . . . . . . . . . . . .
-                . . . . . . . . . . . . . . . .
-                `, selected, wayX[i], wayY[i])
-                projectile.z = 1
-                //projectile.setFlag(SpriteFlag.Invisible, true)
+                let marker = sprites.createProjectileFromSprite(img`
+                    . . . . 2 . . . . . 2 . . . . .
+                    . . . 2 . 2 . . . . 2 . . . . .
+                    . . 2 2 . 2 . . 2 2 2 . . . . .
+                    . 2 2 2 2 . . 2 2 . 2 2 2 . . .
+                    . 2 . 2 2 2 2 . . 2 2 2 2 . . .
+                    . . 2 . 2 2 . 2 2 2 . 2 2 2 2 .
+                    . 2 . 2 2 2 2 2 2 2 2 2 2 2 . .
+                    . 2 2 2 . . 2 2 2 2 2 2 2 2 . .
+                    . 2 2 . . 2 2 3 2 2 2 2 2 2 . .
+                    2 . . . 2 2 . 2 2 2 2 . 2 2 . .
+                    2 . . 2 2 2 . 2 2 2 . 2 . 2 . .
+                    2 . 2 . . 2 2 2 2 . 2 . 2 . . .
+                    2 2 . . . 2 2 . 2 2 . . 2 . . .
+                    2 2 . . . 2 . 2 2 . . . 2 . . .
+                    . . . . 2 2 2 2 . . . . 2 . . .
+                    . . . . 2 . . . . . . 2 . . . .
+                `, forwhat, wayx[i] ,wayy[i])
+                marker.setPosition(wayX[i], wayY[i])
+                //marker.setFlag(SpriteFlag.Invisible, true)
+            }       
+        }
+    }
+    function determineMovesExtended(forwhat:Sprite,x:number,y:number) {
+        const wayX = [forwhat.x - width*2, forwhat.x + width*2]
+        const wayY = [forwhat.y - height*2, forwhat.y + height*2]
+        //let loops = 2
+
+        if (forwhat != null){
+            if(selected.image.equals(assets.image`Black_lady`) || selected.image.equals(assets.image`White_lady`)){
+                //loops = 4
             }
+            else if (ply == "white" && white.startSide == 1 || ply == "black" && black.startSide == 1){
+                //wayY = [forwhat.y-height*2, forwhat.y-height*2]
+                //loops = 2
+            }
+            else {
+                //wayY = [forwhat.y+height*2, forwhat.y+height*2]
+                //loops = 2
+            }
+
             
+            let marker = sprites.create(img`
+                . . . . 3 . . . . . 3 . . . . .
+                . . . 3 . 3 . . . . 3 . . . . .
+                . . 3 3 . 3 . . 3 3 3 . . . . .
+                . 3 3 3 3 . . 3 3 . 3 3 3 . . .
+                . 3 . 3 3 3 3 . . 3 3 3 3 . . .
+                . . 3 . 3 3 . 3 3 3 . 3 3 3 3 .
+                . 3 . 3 3 3 3 3 3 3 3 3 3 3 . .
+                . 3 3 3 . . 3 3 3 3 3 3 3 3 . .
+                . 3 3 . . 3 3 3 3 3 3 3 3 3 . .
+                3 . . . 3 3 . 3 3 3 3 . 3 3 . .
+                3 . . 3 3 3 . 3 3 3 . 3 . 3 . .
+                3 . 3 . . 3 3 3 3 . 3 . 3 . . .
+                3 3 . . . 3 3 . 3 3 . . 3 . . .
+                3 3 . . . 3 . 3 3 . . . 3 . . .
+                . . . . 3 3 3 3 . . . . 3 . . .
+                . . . . 3 . . . . . . 3 . . . .
+            `, SpriteKind.Marker)
+            console.log("Pozice "+wayX[x]+" "+wayY[y])
+            marker.setPosition(wayX[x], wayY[y])
+            console.log("Pozice "+marker.x+" "+marker.y)
+            //marker.setFlag(SpriteFlag.Invisible, true)
+                
         }
     }
 
- // Ignore the tile you are on, ladies have infinite range (WIP)
     sprites.onOverlap(SpriteKind.Projectile, SpriteKind.BlackTile, function(sprite: Sprite, otherSprite: Sprite) {
+        
+        if (otherSprite.z != -2 && otherSprite.z != -3){
+            otherSprite.setImage(assets.image`Green_tile`)
+        }
+        if(ply == "black" && otherSprite.z == -3 || ply == "white" && otherSprite.z == -2){
+            console.log("Rychlost "+sprite.vx+" "+sprite.vy)
+            determineMovesExtended(selected, sprite.vx, sprite.vy)
+        }
 
-        if (!otherSprite.overlapsWith(selector) && otherSprite.z != -2){ // Have to figure out how to count greend tiles and passed checkers
-            if (!otherSprite.image.equals(assets.image`Green_tile`)){
+        sprite.destroy()
+    })
+
+        sprites.onOverlap(SpriteKind.Marker, SpriteKind.BlackTile, function(sprite: Sprite, otherSprite: Sprite) {
+        
+        if (otherSprite.z != -2 && otherSprite.z != -3){
             otherSprite.setImage(assets.image`Green_tile`)
-            sprite.z == -10
-            }
-            if (!otherSprite.image.equals(assets.image`Green_tile`) && sprite.z == -10)
-            otherSprite.setImage(assets.image`Green_tile`)
-            sprite.destroy()
-            if (!selected.image.equals(assets.image`White_lady`) || !selected.image.equals(assets.image`Black_lady`)){
-                if (sprite.z < -1){
-                    sprite.destroy()
-                }                
-            }    
-      
-        }  
-        console.log(sprite.z)    
+        }
+        if(ply == "black" && otherSprite.z == -3 || ply == "white" && otherSprite.z == -2){
+            
+        }
+
+        sprite.destroy()
     })
 
 
@@ -291,7 +278,7 @@ const wayX = [way, -way, way, -way]
         //otherSprite.setImage(assets.image`Black_tile`)
     })
     sprites.onOverlap(SpriteKind.WhiteChecker, SpriteKind.BlackTile, function(sprite: Sprite, otherSprite: Sprite) {
-        otherSprite.z = -2
+        otherSprite.z = -3
         //otherSprite.setImage(assets.image`Black_tile`)
     })
 
@@ -316,3 +303,4 @@ sprites.onOverlap(SpriteKind.Projectile, SpriteKind.WhiteChecker, function(sprit
 }) 
 
 }
+
