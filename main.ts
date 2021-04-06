@@ -9,13 +9,15 @@ namespace SpriteKind{
     //export const BlackLady = SpriteKind.create()
     //export const WhiteLady = SpriteKind.create()
 }
-
-
 scene.setBackgroundColor(6)
+game.splash("HalfCheckers", "by Lukyn150") // INTRO
+
+
+
 
 // Globals
 let checkertiles = [ [] as Sprite[]] //Chessboard
-let selector = sprites.create(assets.image`Selector_red`,SpriteKind.Selector)
+let selector = sprites.create(assets.image`Selector_blu`,SpriteKind.Selector)
 selector.z = 10
 let black = {checkers: [] as Sprite[], startSide:0} //player1
 let white = {checkers: [] as Sprite[], startSide:1} //player2
@@ -61,6 +63,9 @@ for (let i = 0; i < checkertiles.length; i++) {
     y += verticalTileSpace
 }
 }
+
+game.splash("Red = Black", "Blue = White") // INTRO
+
 // ########## CHECKERS
 
 // ### Checker creation
