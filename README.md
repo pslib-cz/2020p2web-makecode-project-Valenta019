@@ -9,3 +9,8 @@
 
 # Zde odkaz na Github pages
 https://pslib-cz.github.io/2020p2web-makecode-project-Valenta019/
+
+Makecode už nespolupracuje s Githubem
+Oops, something went wrong. Please try gain
+při pushi i pullu
+Tímto nejspíše vývoj končí
