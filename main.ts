@@ -10,7 +10,7 @@ namespace SpriteKind{
     //export const WhiteLady = SpriteKind.create()
 }
 scene.setBackgroundColor(6)
-game.splash("HalfCheckers", "by Lukyn150") // INTRO
+game.splash("HalfCheckers", "by Lukáš Valenta") // INTRO
 
 
 
